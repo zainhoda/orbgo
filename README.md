@@ -1,4 +1,4 @@
-# orbgo
+# ![orbgo](./orbgo.svg)
 
 Beginnings of a Tableau-like front end for Python Pandas (Work In Progress)
 
@@ -28,4 +28,4 @@ Stretch Goals:
     * Code generation that includes a web server
     * Possibly upload the data and code to an online gallery (Plotly has some of this functionality)
 
-![orbgo](./orbgo.svg)
+
