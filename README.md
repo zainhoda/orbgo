@@ -1,5 +1,7 @@
 # orbgo
+
 Beginnings of a Tableau-like front end for Python Pandas (Work In Progress)
+
 
 ![Orbgo Demo](https://media.giphy.com/media/AFg3h2TNzvFZ73PnIS/giphy.gif)
 
@@ -25,3 +27,5 @@ Stretch Goals:
     * Appropriate widgets for parameter types (checkboxes, dropdown, sliders)
     * Code generation that includes a web server
     * Possibly upload the data and code to an online gallery (Plotly has some of this functionality)
+
+![orbgo](./orbgo.svg)
