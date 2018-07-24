@@ -1,4 +1,4 @@
-# ![orbgo](./orbgo.svg)
+# ![orbgo](./orbgo.svg) orbgo
 
 Beginnings of a Tableau-like front end for Python Pandas (Work In Progress)
 
