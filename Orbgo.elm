@@ -1,6 +1,7 @@
 module Orbgo exposing (..)
 
 import Debug exposing (log)
+import EveryDict
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html5.DragDrop as DragDrop
@@ -10,14 +11,24 @@ type Position
     = Row
     | Column
     | Measure
+    | Images
+    | Filters
     | NoPosition
 
 
+type DataType
+    = Object
+    | Int64
+    | Float64
+    | Bool64
+    | DateTime64
+    | TimeDelta
+    | Category
+
+
 type alias Model =
-    { availableFields: List String
-    , rows : List String
-    , columns : List String
-    , measures : List String
+    { availableFields : List ( String, DataType )
+    , fieldsPositioned : EveryDict.EveryDict Position (List String)
     , dragDrop : DragDrop.Model String Position
     }
 
@@ -28,10 +39,14 @@ type Msg
 
 model : Model
 model =
-    { availableFields = ["local_date", "brand", "dma", "num_visits", "dwell_time"]
-    , rows = []
-    , columns = []
-    , measures = []
+    { availableFields =
+        [ ( "local_date", Object )
+        , ( "brand", Object )
+        , ( "dma", Object )
+        , ( "num_visits", Float64 )
+        , ( "dwell_time", Int64 )
+        ]
+    , fieldsPositioned = EveryDict.empty
     , dragDrop = DragDrop.init
     }
 
@@ -54,23 +69,33 @@ update msg model =
             in
             { model
                 | dragDrop = model_
-                , rows =
-                    if x == Row then
-                        model.rows ++ [ str ]
+                , fieldsPositioned =
+                    if str /= "" && x /= NoPosition then
+                        model.fieldsPositioned
+                            |> EveryDict.map
+                                (\k ->
+                                    \listString ->
+                                        if k == x || k == NoPosition then
+                                            listString
+                                        else
+                                            listString
+                                                |> List.filter
+                                                    (\s -> s /= str)
+                                )
+                            |> EveryDict.update x
+                                (\maybeV ->
+                                    case maybeV of
+                                        Nothing ->
+                                            Just [ str ]
+
+                                        Just v ->
+                                            Just (v ++ [ str ])
+                                )
                     else
-                        List.filter (\y -> y /= str) model.rows
-                , columns =
-                    if x == Column then
-                        model.columns ++ [ str ]
-                    else
-                        List.filter (\y -> y /= str) model.columns
-                , measures =
-                    if x == Measure then
-                        model.measures ++ [ str ]
-                    else
-                        List.filter (\y -> y /= str) model.measures
+                        model.fieldsPositioned
             }
                 ! []
+
 
 view : Model -> Html Msg
 view model =
@@ -167,7 +192,7 @@ view model =
                                         ]
                                     ]
                                 ]
-                                , viewDiv NoPosition model.availableFields maybeDragId dropId
+                            , viewDiv NoPosition model.fieldsPositioned maybeDragId dropId
                             ]
                         , div [ class "tabs_container_2" ]
                             [ div [ class "heading" ]
@@ -202,10 +227,12 @@ view model =
                 [ div [ class "content_box" ]
                     [ div [ class "title" ]
                         [ text "Images" ]
+                    , viewDiv Images model.fieldsPositioned maybeDragId dropId
                     ]
                 , div [ class "content_box" ]
                     [ div [ class "title" ]
                         [ text "Filters" ]
+                    , viewDiv Filters model.fieldsPositioned maybeDragId dropId
                     ]
                 , div [ class "content_box" ]
                     [ div [ class "title" ]
@@ -219,8 +246,8 @@ view model =
                             , option [ value "Option 3" ]
                                 [ text "Option 3" ]
                             ]
-                        ]                    
-                    , viewDiv Measure model.measures maybeDragId dropId
+                        ]
+                    , viewDiv Measure model.fieldsPositioned maybeDragId dropId
                     ]
                 ]
             , div [ class "col3" ]
@@ -230,7 +257,7 @@ view model =
                             [ text "Columns" ]
                         ]
                     , div [ class "right_portion" ]
-                        [ viewDiv Column model.columns maybeDragId dropId ]
+                        [ viewDiv Column model.fieldsPositioned maybeDragId dropId ]
                     ]
                 , div [ class "col3_top_bar rows" ]
                     [ div [ class "left_portion" ]
@@ -238,10 +265,24 @@ view model =
                             [ text "Rows" ]
                         ]
                     , div [ class "right_portion" ]
-                        [ viewDiv Row model.rows maybeDragId dropId ]
+                        [ viewDiv Row model.fieldsPositioned maybeDragId dropId ]
                     ]
                 , div [ class "col3_contentarea" ]
-                    [ pre [] [text ("data.pivot_table(index="++ (toString model.rows) ++", columns="++ (toString model.columns) ++", values="++ (toString model.measures) ++", aggfunc=np.sum, fill_value=0)" )]
+                    [ span [ style [ ( "font-family", "monospace" ) ] ]
+                        [ text
+                            (let
+                                getCols position =
+                                    EveryDict.get position model.fieldsPositioned |> Maybe.withDefault []
+                             in
+                             "data.pivot_table(index="
+                                ++ toString (getCols Row)
+                                ++ ", columns="
+                                ++ toString (getCols Column)
+                                ++ ", values="
+                                ++ toString (getCols Measure)
+                                ++ ", aggfunc=np.sum, fill_value=0)"
+                            )
+                        ]
                     ]
                 ]
             ]
@@ -301,22 +342,6 @@ view model =
             ]
         ]
 
-viewAlt : Model -> Html Msg
-viewAlt model =
-    let
-        dropId =
-            DragDrop.getDropId model.dragDrop
-
-        maybeDragId =
-            DragDrop.getDragId model.dragDrop
-    in
-    div []
-        [ viewDiv NoPosition model.availableFields maybeDragId dropId
-        , viewDiv Row model.rows maybeDragId dropId
-        , viewDiv Column model.columns maybeDragId dropId
-        , viewDiv Measure model.measures maybeDragId dropId
-        , pre [] [text ("data.pivot_table(index="++ (toString model.rows) ++",columns="++ (toString model.columns) ++", values="++ (toString model.measures) ++", aggfunc=np.sum, fill_value=0)" )]
-        ]
 
 isNothing : Maybe a -> Bool
 isNothing maybe =
@@ -328,9 +353,12 @@ isNothing maybe =
             True
 
 
-viewDiv : Position -> List String -> Maybe String -> Maybe Position -> Html Msg
-viewDiv position currentColumns maybeDragId dropId =
+viewDiv : Position -> EveryDict.EveryDict Position (List String) -> Maybe String -> Maybe Position -> Html Msg
+viewDiv position d maybeDragId dropId =
     let
+        currentColumns =
+            EveryDict.get position d |> Maybe.withDefault []
+
         highlight =
             if dropId |> Maybe.map ((==) position) |> Maybe.withDefault False then
                 [ style [ ( "background-color", "cyan" ) ] ]
@@ -350,26 +378,34 @@ viewDiv position currentColumns maybeDragId dropId =
                     []
                )
         )
-        (
-        case List.length currentColumns of
+        (case List.length currentColumns of
             0 ->
-                [text "Drop Here"]
+                [ text "Drop Here" ]
+
             _ ->
-                (
                 List.map
                     (\x ->
-                        li ( (DragDrop.draggable DragDropMsg x) ++ [class "abc"] )
-                            [ a [] [text x]
+                        li (DragDrop.draggable DragDropMsg x ++ [ class "abc" ])
+                            [ a [] [ text x ]
                             ]
                     )
-                    currentColumns        
-                )
+                    currentColumns
         )
+
 
 main : Program Never Model Msg
 main =
     program
-        { init = ( model, Cmd.none )
+        { init =
+            ( { model
+                | fieldsPositioned =
+                    EveryDict.insert
+                        NoPosition
+                        (List.map (\( a, b ) -> a) model.availableFields)
+                        model.fieldsPositioned
+              }
+            , Cmd.none
+            )
         , update = update
         , view = view
         , subscriptions = always Sub.none
