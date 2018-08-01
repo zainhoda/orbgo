@@ -3,7 +3,7 @@
 Beginnings of a Tableau-like front end for Python Pandas (Work In Progress)
 
 
-![Orbgo Screenshot](Screen%20Shot%202018-07-27%20at%2012.16.51%20AM.png)
+![Orbgo Screenshot](demo.png)
 
 In my data analysis workflow I end up doing a lot of my exploratory analysis in Tableau and then mentally translating what I've done into Python Pandas so that I have fine-grained control over the calculations. 
 
