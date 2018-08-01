@@ -9573,71 +9573,81 @@ var _zainhoda$orbgo$Orbgo$isNothing = function (maybe) {
 		return true;
 	}
 };
-var _zainhoda$orbgo$Orbgo$Model = F3(
-	function (a, b, c) {
-		return {availableFields: a, fieldsPositioned: b, dragDrop: c};
+var _zainhoda$orbgo$Orbgo$Model = F4(
+	function (a, b, c, d) {
+		return {availableFields: a, fieldsPositioned: b, dragDrop: c, chartType: d};
 	});
 var _zainhoda$orbgo$Orbgo$NoPosition = {ctor: 'NoPosition'};
 var _zainhoda$orbgo$Orbgo$update = F2(
 	function (msg, model) {
 		var _p1 = A2(_elm_lang$core$Debug$log, 'msg', msg);
-		var _p2 = A2(_norpan$elm_html5_drag_drop$Html5_DragDrop$updateSticky, _p1._0, model.dragDrop);
-		var model_ = _p2._0;
-		var result = _p2._1;
-		var _p3 = function () {
-			var _p4 = result;
-			if (_p4.ctor === 'Nothing') {
-				return {ctor: '_Tuple2', _0: _zainhoda$orbgo$Orbgo$NoPosition, _1: ''};
-			} else {
-				return {ctor: '_Tuple2', _0: _p4._0._1, _1: _p4._0._0};
-			}
-		}();
-		var x = _p3._0;
-		var str = _p3._1;
-		return A2(
-			_elm_lang$core$Platform_Cmd_ops['!'],
-			_elm_lang$core$Native_Utils.update(
-				model,
-				{
-					dragDrop: model_,
-					fieldsPositioned: ((!_elm_lang$core$Native_Utils.eq(str, '')) && (!_elm_lang$core$Native_Utils.eq(x, _zainhoda$orbgo$Orbgo$NoPosition))) ? A3(
-						_eeue56$elm_all_dict$EveryDict$update,
-						x,
-						function (maybeV) {
-							var _p5 = maybeV;
-							if (_p5.ctor === 'Nothing') {
-								return _elm_lang$core$Maybe$Just(
-									{
-										ctor: '::',
-										_0: str,
-										_1: {ctor: '[]'}
-									});
-							} else {
-								return _elm_lang$core$Maybe$Just(
-									A2(
-										_elm_lang$core$Basics_ops['++'],
-										_p5._0,
+		if (_p1.ctor === 'SetChartType') {
+			return {
+				ctor: '_Tuple2',
+				_0: _elm_lang$core$Native_Utils.update(
+					model,
+					{chartType: _p1._0}),
+				_1: _elm_lang$core$Platform_Cmd$none
+			};
+		} else {
+			var _p2 = A2(_norpan$elm_html5_drag_drop$Html5_DragDrop$updateSticky, _p1._0, model.dragDrop);
+			var model_ = _p2._0;
+			var result = _p2._1;
+			var _p3 = function () {
+				var _p4 = result;
+				if (_p4.ctor === 'Nothing') {
+					return {ctor: '_Tuple2', _0: _zainhoda$orbgo$Orbgo$NoPosition, _1: ''};
+				} else {
+					return {ctor: '_Tuple2', _0: _p4._0._1, _1: _p4._0._0};
+				}
+			}();
+			var x = _p3._0;
+			var str = _p3._1;
+			return A2(
+				_elm_lang$core$Platform_Cmd_ops['!'],
+				_elm_lang$core$Native_Utils.update(
+					model,
+					{
+						dragDrop: model_,
+						fieldsPositioned: ((!_elm_lang$core$Native_Utils.eq(str, '')) && (!_elm_lang$core$Native_Utils.eq(x, _zainhoda$orbgo$Orbgo$NoPosition))) ? A3(
+							_eeue56$elm_all_dict$EveryDict$update,
+							x,
+							function (maybeV) {
+								var _p5 = maybeV;
+								if (_p5.ctor === 'Nothing') {
+									return _elm_lang$core$Maybe$Just(
 										{
 											ctor: '::',
 											_0: str,
 											_1: {ctor: '[]'}
-										}));
-							}
-						},
-						A2(
-							_eeue56$elm_all_dict$EveryDict$map,
-							F2(
-								function (k, listString) {
-									return (_elm_lang$core$Native_Utils.eq(k, x) || _elm_lang$core$Native_Utils.eq(k, _zainhoda$orbgo$Orbgo$NoPosition)) ? listString : A2(
-										_elm_lang$core$List$filter,
-										function (s) {
-											return !_elm_lang$core$Native_Utils.eq(s, str);
-										},
-										listString);
-								}),
-							model.fieldsPositioned)) : model.fieldsPositioned
-				}),
-			{ctor: '[]'});
+										});
+								} else {
+									return _elm_lang$core$Maybe$Just(
+										A2(
+											_elm_lang$core$Basics_ops['++'],
+											_p5._0,
+											{
+												ctor: '::',
+												_0: str,
+												_1: {ctor: '[]'}
+											}));
+								}
+							},
+							A2(
+								_eeue56$elm_all_dict$EveryDict$map,
+								F2(
+									function (k, listString) {
+										return (_elm_lang$core$Native_Utils.eq(k, x) || _elm_lang$core$Native_Utils.eq(k, _zainhoda$orbgo$Orbgo$NoPosition)) ? listString : A2(
+											_elm_lang$core$List$filter,
+											function (s) {
+												return !_elm_lang$core$Native_Utils.eq(s, str);
+											},
+											listString);
+									}),
+								model.fieldsPositioned)) : model.fieldsPositioned
+					}),
+				{ctor: '[]'});
+		}
 	});
 var _zainhoda$orbgo$Orbgo$Filters = {ctor: 'Filters'};
 var _zainhoda$orbgo$Orbgo$Images = {ctor: 'Images'};
@@ -9651,6 +9661,16 @@ var _zainhoda$orbgo$Orbgo$Bool64 = {ctor: 'Bool64'};
 var _zainhoda$orbgo$Orbgo$Float64 = {ctor: 'Float64'};
 var _zainhoda$orbgo$Orbgo$Int64 = {ctor: 'Int64'};
 var _zainhoda$orbgo$Orbgo$Object = {ctor: 'Object'};
+var _zainhoda$orbgo$Orbgo$Pie = {ctor: 'Pie'};
+var _zainhoda$orbgo$Orbgo$Hexbin = {ctor: 'Hexbin'};
+var _zainhoda$orbgo$Orbgo$Scatter = {ctor: 'Scatter'};
+var _zainhoda$orbgo$Orbgo$Area = {ctor: 'Area'};
+var _zainhoda$orbgo$Orbgo$KDE = {ctor: 'KDE'};
+var _zainhoda$orbgo$Orbgo$Boxplot = {ctor: 'Boxplot'};
+var _zainhoda$orbgo$Orbgo$Histogram = {ctor: 'Histogram'};
+var _zainhoda$orbgo$Orbgo$Bar = {ctor: 'Bar'};
+var _zainhoda$orbgo$Orbgo$ColumnChart = {ctor: 'ColumnChart'};
+var _zainhoda$orbgo$Orbgo$Line = {ctor: 'Line'};
 var _zainhoda$orbgo$Orbgo$model = {
 	availableFields: {
 		ctor: '::',
@@ -9674,7 +9694,11 @@ var _zainhoda$orbgo$Orbgo$model = {
 		}
 	},
 	fieldsPositioned: _eeue56$elm_all_dict$EveryDict$empty,
-	dragDrop: _norpan$elm_html5_drag_drop$Html5_DragDrop$init
+	dragDrop: _norpan$elm_html5_drag_drop$Html5_DragDrop$init,
+	chartType: _zainhoda$orbgo$Orbgo$Line
+};
+var _zainhoda$orbgo$Orbgo$SetChartType = function (a) {
+	return {ctor: 'SetChartType', _0: a};
 };
 var _zainhoda$orbgo$Orbgo$DragDropMsg = function (a) {
 	return {ctor: 'DragDropMsg', _0: a};
@@ -10836,7 +10860,237 @@ var _zainhoda$orbgo$Orbgo$view = function (model) {
 															}),
 														_1: {ctor: '[]'}
 													}),
-												_1: {ctor: '[]'}
+												_1: {
+													ctor: '::',
+													_0: A2(
+														_elm_lang$html$Html$div,
+														{
+															ctor: '::',
+															_0: _elm_lang$html$Html_Attributes$class('col3_contentarea paddingless'),
+															_1: {ctor: '[]'}
+														},
+														{
+															ctor: '::',
+															_0: A2(
+																_elm_lang$html$Html$iframe,
+																{
+																	ctor: '::',
+																	_0: _elm_lang$html$Html_Attributes$src(
+																		function () {
+																			var getCols = function (position) {
+																				return A2(
+																					_elm_lang$core$Maybe$withDefault,
+																					{ctor: '[]'},
+																					A2(_eeue56$elm_all_dict$EveryDict$get, position, model.fieldsPositioned));
+																			};
+																			return A2(
+																				_elm_lang$core$Basics_ops['++'],
+																				'http://zainhoda.pythonanywhere.com/pivot_table(index=',
+																				A2(
+																					_elm_lang$core$Basics_ops['++'],
+																					_elm_lang$core$Basics$toString(
+																						getCols(_zainhoda$orbgo$Orbgo$Row)),
+																					A2(
+																						_elm_lang$core$Basics_ops['++'],
+																						', columns=',
+																						A2(
+																							_elm_lang$core$Basics_ops['++'],
+																							_elm_lang$core$Basics$toString(
+																								getCols(_zainhoda$orbgo$Orbgo$Column)),
+																							A2(
+																								_elm_lang$core$Basics_ops['++'],
+																								', values=',
+																								A2(
+																									_elm_lang$core$Basics_ops['++'],
+																									_elm_lang$core$Basics$toString(
+																										getCols(_zainhoda$orbgo$Orbgo$Measure)),
+																									', aggfunc=np.sum, fill_value=0)'))))));
+																		}()),
+																	_1: {ctor: '[]'}
+																},
+																{ctor: '[]'}),
+															_1: {ctor: '[]'}
+														}),
+													_1: {
+														ctor: '::',
+														_0: A2(
+															_elm_lang$html$Html$div,
+															{
+																ctor: '::',
+																_0: _elm_lang$html$Html_Attributes$class('col3_contentarea paddingless ui-tabs ui-corner-all ui-widget ui-widget-content'),
+																_1: {ctor: '[]'}
+															},
+															{
+																ctor: '::',
+																_0: A2(
+																	_elm_lang$html$Html$ul,
+																	{
+																		ctor: '::',
+																		_0: _elm_lang$html$Html_Attributes$class('ui-tabs-nav ui-corner-all ui-helper-reset ui-helper-clearfix ui-widget-header'),
+																		_1: {
+																			ctor: '::',
+																			_0: A2(_elm_lang$html$Html_Attributes$attribute, 'role', 'tablist'),
+																			_1: {ctor: '[]'}
+																		}
+																	},
+																	A2(
+																		_elm_lang$core$List$map,
+																		function (x) {
+																			return A2(
+																				_elm_lang$html$Html$li,
+																				{
+																					ctor: '::',
+																					_0: _elm_lang$html$Html_Attributes$class(
+																						A2(
+																							_elm_lang$core$Basics_ops['++'],
+																							'ui-tabs-tab ui-corner-top ui-state-default ui-tab ',
+																							_elm_lang$core$Native_Utils.eq(x, model.chartType) ? 'ui-tabs-active ui-state-active' : '')),
+																					_1: {ctor: '[]'}
+																				},
+																				{
+																					ctor: '::',
+																					_0: A2(
+																						_elm_lang$html$Html$a,
+																						{
+																							ctor: '::',
+																							_0: _elm_lang$html$Html_Attributes$class('ui-tabs-anchor'),
+																							_1: {
+																								ctor: '::',
+																								_0: _elm_lang$html$Html_Attributes$href('#'),
+																								_1: {
+																									ctor: '::',
+																									_0: _elm_lang$html$Html_Events$onClick(
+																										_zainhoda$orbgo$Orbgo$SetChartType(x)),
+																									_1: {ctor: '[]'}
+																								}
+																							}
+																						},
+																						{
+																							ctor: '::',
+																							_0: _elm_lang$html$Html$text(
+																								_elm_lang$core$Basics$toString(x)),
+																							_1: {ctor: '[]'}
+																						}),
+																					_1: {ctor: '[]'}
+																				});
+																		},
+																		{
+																			ctor: '::',
+																			_0: _zainhoda$orbgo$Orbgo$Line,
+																			_1: {
+																				ctor: '::',
+																				_0: _zainhoda$orbgo$Orbgo$ColumnChart,
+																				_1: {
+																					ctor: '::',
+																					_0: _zainhoda$orbgo$Orbgo$Bar,
+																					_1: {
+																						ctor: '::',
+																						_0: _zainhoda$orbgo$Orbgo$Histogram,
+																						_1: {
+																							ctor: '::',
+																							_0: _zainhoda$orbgo$Orbgo$Boxplot,
+																							_1: {
+																								ctor: '::',
+																								_0: _zainhoda$orbgo$Orbgo$KDE,
+																								_1: {
+																									ctor: '::',
+																									_0: _zainhoda$orbgo$Orbgo$Area,
+																									_1: {
+																										ctor: '::',
+																										_0: _zainhoda$orbgo$Orbgo$Scatter,
+																										_1: {
+																											ctor: '::',
+																											_0: _zainhoda$orbgo$Orbgo$Hexbin,
+																											_1: {
+																												ctor: '::',
+																												_0: _zainhoda$orbgo$Orbgo$Pie,
+																												_1: {ctor: '[]'}
+																											}
+																										}
+																									}
+																								}
+																							}
+																						}
+																					}
+																				}
+																			}
+																		})),
+																_1: {
+																	ctor: '::',
+																	_0: A2(
+																		_elm_lang$html$Html$img,
+																		{
+																			ctor: '::',
+																			_0: _elm_lang$html$Html_Attributes$src(
+																				function () {
+																					var getCols = function (position) {
+																						return A2(
+																							_elm_lang$core$Maybe$withDefault,
+																							{ctor: '[]'},
+																							A2(_eeue56$elm_all_dict$EveryDict$get, position, model.fieldsPositioned));
+																					};
+																					return A2(
+																						_elm_lang$core$Basics_ops['++'],
+																						'http://zainhoda.pythonanywhere.com/pivot_table(index=',
+																						A2(
+																							_elm_lang$core$Basics_ops['++'],
+																							_elm_lang$core$Basics$toString(
+																								getCols(_zainhoda$orbgo$Orbgo$Row)),
+																							A2(
+																								_elm_lang$core$Basics_ops['++'],
+																								', columns=',
+																								A2(
+																									_elm_lang$core$Basics_ops['++'],
+																									_elm_lang$core$Basics$toString(
+																										getCols(_zainhoda$orbgo$Orbgo$Column)),
+																									A2(
+																										_elm_lang$core$Basics_ops['++'],
+																										', values=',
+																										A2(
+																											_elm_lang$core$Basics_ops['++'],
+																											_elm_lang$core$Basics$toString(
+																												getCols(_zainhoda$orbgo$Orbgo$Measure)),
+																											A2(
+																												_elm_lang$core$Basics_ops['++'],
+																												', aggfunc=np.sum, fill_value=0).plot(kind=\'',
+																												A2(
+																													_elm_lang$core$Basics_ops['++'],
+																													function () {
+																														var _p7 = model.chartType;
+																														switch (_p7.ctor) {
+																															case 'Line':
+																																return 'line';
+																															case 'ColumnChart':
+																																return 'bar';
+																															case 'Bar':
+																																return 'barh';
+																															case 'Histogram':
+																																return 'hist';
+																															case 'Boxplot':
+																																return 'box';
+																															case 'KDE':
+																																return 'kde';
+																															case 'Area':
+																																return 'area';
+																															case 'Scatter':
+																																return 'scatter';
+																															case 'Hexbin':
+																																return 'hexbin';
+																															default:
+																																return 'pie';
+																														}
+																													}(),
+																													'\',figsize=(16,9))'))))))));
+																				}()),
+																			_1: {ctor: '[]'}
+																		},
+																		{ctor: '[]'}),
+																	_1: {ctor: '[]'}
+																}
+															}),
+														_1: {ctor: '[]'}
+													}
+												}
 											}
 										}
 									}),
@@ -11117,9 +11371,9 @@ var _zainhoda$orbgo$Orbgo$main = _elm_lang$html$Html$program(
 						_zainhoda$orbgo$Orbgo$NoPosition,
 						A2(
 							_elm_lang$core$List$map,
-							function (_p7) {
-								var _p8 = _p7;
-								return _p8._0;
+							function (_p8) {
+								var _p9 = _p8;
+								return _p9._0;
 							},
 							_zainhoda$orbgo$Orbgo$model.availableFields),
 						_zainhoda$orbgo$Orbgo$model.fieldsPositioned)

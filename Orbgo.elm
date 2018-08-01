@@ -4,6 +4,7 @@ import Debug exposing (log)
 import EveryDict
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Html.Events exposing (..)
 import Html5.DragDrop as DragDrop
 
 
@@ -26,15 +27,30 @@ type DataType
     | Category
 
 
+type ChartType
+    = Line
+    | ColumnChart
+    | Bar
+    | Histogram
+    | Boxplot
+    | KDE
+    | Area
+    | Scatter
+    | Hexbin
+    | Pie
+
+
 type alias Model =
     { availableFields : List ( String, DataType )
     , fieldsPositioned : EveryDict.EveryDict Position (List String)
     , dragDrop : DragDrop.Model String Position
+    , chartType : ChartType
     }
 
 
 type Msg
     = DragDropMsg (DragDrop.Msg String Position)
+    | SetChartType ChartType
 
 
 model : Model
@@ -48,12 +64,16 @@ model =
         ]
     , fieldsPositioned = EveryDict.empty
     , dragDrop = DragDrop.init
+    , chartType = Line
     }
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case log "msg" msg of
+        SetChartType chartType ->
+            ( { model | chartType = chartType }, Cmd.none )
+
         DragDropMsg msg_ ->
             let
                 ( model_, result ) =
@@ -283,6 +303,84 @@ view model =
                                 ++ ", aggfunc=np.sum, fill_value=0)"
                             )
                         ]
+                    ]
+                , div [ class "col3_contentarea paddingless" ]
+                    [ iframe
+                        [ src
+                            (let
+                                getCols position =
+                                    EveryDict.get position model.fieldsPositioned |> Maybe.withDefault []
+                             in
+                             "http://zainhoda.pythonanywhere.com/pivot_table(index="
+                                ++ toString (getCols Row)
+                                ++ ", columns="
+                                ++ toString (getCols Column)
+                                ++ ", values="
+                                ++ toString (getCols Measure)
+                                ++ ", aggfunc=np.sum, fill_value=0)"
+                            )
+                        ]
+                        []
+                    ]
+                , div [ class "col3_contentarea paddingless ui-tabs ui-corner-all ui-widget ui-widget-content" ]
+                    [ ul [ class "ui-tabs-nav ui-corner-all ui-helper-reset ui-helper-clearfix ui-widget-header", attribute "role" "tablist" ]
+                        (List.map
+                            (\x ->
+                                li
+                                    [ class
+                                        ("ui-tabs-tab ui-corner-top ui-state-default ui-tab "
+                                            ++ (if x == model.chartType then
+                                                    "ui-tabs-active ui-state-active"
+                                                else
+                                                    ""
+                                               )
+                                        )
+                                    ]
+                                    [ a [ class "ui-tabs-anchor", href "#", onClick (SetChartType x) ]
+                                        [ text (toString x) ]
+                                    ]
+                            )
+                            [ Line, ColumnChart, Bar, Histogram, Boxplot, KDE, Area, Scatter, Hexbin, Pie ]
+                        )
+                    , img
+                        [ src
+                            (let
+                                getCols position =
+                                    EveryDict.get position model.fieldsPositioned |> Maybe.withDefault []
+                             in
+                             "http://zainhoda.pythonanywhere.com/pivot_table(index="
+                                ++ toString (getCols Row)
+                                ++ ", columns="
+                                ++ toString (getCols Column)
+                                ++ ", values="
+                                ++ toString (getCols Measure)
+                                ++ ", aggfunc=np.sum, fill_value=0).plot(kind='"
+                                ++ (case model.chartType of
+                                        Line ->
+                                            "line"
+                                        ColumnChart ->
+                                            "bar"
+                                        Bar ->
+                                            "barh"
+                                        Histogram ->
+                                            "hist"
+                                        Boxplot ->
+                                            "box"
+                                        KDE -> 
+                                            "kde"
+                                        Area ->
+                                            "area"
+                                        Scatter ->
+                                            "scatter"
+                                        Hexbin ->
+                                            "hexbin"
+                                        Pie ->
+                                            "pie"
+                                   )
+                                ++ "',figsize=(16,9))"
+                            )
+                        ]
+                        []
                     ]
                 ]
             ]

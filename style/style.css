@@ -392,3 +392,13 @@ li[draggable]:hover a{
 	display: inline-flex;
 	width: 100%;
 }
+
+iframe {
+	width: 100%;
+	height: 100%;
+}
+
+.paddingless {
+	padding: 0px !important;
+}
+
