@@ -6,6 +6,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Html5.DragDrop as DragDrop
+import Http
 
 
 type Position
@@ -51,6 +52,7 @@ type alias Model =
 type Msg
     = DragDropMsg (DragDrop.Msg String Position)
     | SetChartType ChartType
+    | DataTypes (Result Http.Error String)
 
 
 model : Model
@@ -73,6 +75,38 @@ update msg model =
     case log "msg" msg of
         SetChartType chartType ->
             ( { model | chartType = chartType }, Cmd.none )
+
+        DataTypes resultStr ->
+            case resultStr of
+                Ok str ->
+                    let
+                        lines =
+                            log "lines" <| String.lines str
+
+                        fields =
+                            log "fields" <|
+                                List.map
+                                    (\l ->
+                                        String.words l
+                                            |> List.head
+                                            |> Maybe.map (\fieldName -> ( fieldName, Object ))
+                                            |> Maybe.withDefault ( "", Object )
+                                    )
+                                    lines
+                    in
+                    ( { model
+                        | availableFields = fields
+                        , fieldsPositioned =
+                            EveryDict.insert
+                                NoPosition
+                                (List.map (\( a, b ) -> a) fields)
+                                EveryDict.empty
+                      }
+                    , Cmd.none
+                    )
+
+                _ ->
+                    ( model, Cmd.none )
 
         DragDropMsg msg_ ->
             let
@@ -317,7 +351,7 @@ view model =
                                 ++ toString (getCols Column)
                                 ++ ", values="
                                 ++ toString (getCols Measure)
-                                ++ ", aggfunc=np.sum, fill_value=0)"
+                                ++ ", aggfunc=np.sum, fill_value=0).to_html(max_rows=20,max_cols=20)"
                             )
                         ]
                         []
@@ -358,22 +392,31 @@ view model =
                                 ++ (case model.chartType of
                                         Line ->
                                             "line"
+
                                         ColumnChart ->
                                             "bar"
+
                                         Bar ->
                                             "barh"
+
                                         Histogram ->
                                             "hist"
+
                                         Boxplot ->
                                             "box"
-                                        KDE -> 
+
+                                        KDE ->
                                             "kde"
+
                                         Area ->
                                             "area"
+
                                         Scatter ->
                                             "scatter"
+
                                         Hexbin ->
                                             "hexbin"
+
                                         Pie ->
                                             "pie"
                                    )
@@ -502,9 +545,15 @@ main =
                         (List.map (\( a, b ) -> a) model.availableFields)
                         model.fieldsPositioned
               }
-            , Cmd.none
+            , getAvailableFields
             )
         , update = update
         , view = view
         , subscriptions = always Sub.none
         }
+
+
+getAvailableFields : Cmd Msg
+getAvailableFields =
+    Http.send DataTypes <|
+        Http.getString "http://zainhoda.pythonanywhere.com/dtypes.to_string()"
